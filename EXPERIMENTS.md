@@ -83,14 +83,51 @@ OpenCV-recommended formulas `8 * channels * blockSize^2` and
 
 ## Results to complete
 
-After running the validation sweep, record the best row from
-`results/tuning_validation/tuning_results.csv` here. Then run the selected
-parameters once on the held-out five-scene set and record those metrics below.
+The 27-configuration validation sweep selected the following setting by lowest
+D1. The result is **validation-only** and must not be presented as the final
+score because the configuration was selected using these same images.
 
 | Stage | IDs | Parameters | D1 | Bad-3 | RMSE (px) |
 |---|---|---|---:|---:|---:|
-| Best validation configuration | `000000_10`–`000002_10` | Pending | Pending | Pending | Pending |
-| Held-out final evaluation | `000005_10`–`000009_10` | Pending | Pending | Pending | Pending |
+| Best validation configuration | `000000_10`–`000002_10` | `numDisparities=128`, `blockSize=9`, `uniquenessRatio=5` | 17.9321% | 17.9385% | 13.2916 |
+| Held-out final evaluation | `000005_10`–`000009_10` | `numDisparities=128`, `blockSize=9`, `uniquenessRatio=5` | 16.2764% | 16.6643% | 16.3709 |
+
+## Final held-out analysis
+
+The locked configuration was evaluated once on five image IDs that were not
+used for parameter selection. All five had valid `disp_occ_0` ground truth,
+for a total of 511,434 evaluated pixels.
+
+| Pair ID | D1 | Bad-3 | RMSE (px) |
+|---|---:|---:|---:|
+| `000005_10` | 23.1024% | 23.4576% | 22.7122 |
+| `000006_10` | 28.5944% | 30.0765% | 24.0277 |
+| `000007_10` | 12.5089% | 12.5117% | 11.4864 |
+| `000008_10` | 6.4673% | 6.4673% | 5.2319 |
+| `000009_10` | 10.0816% | 10.0826% | 8.9249 |
+| **Aggregate (pixel-weighted)** | **16.2764%** | **16.6643%** | **16.3709** |
+
+The spread across scenes is substantial (D1 from 6.47% to 28.59%), which
+reinforces that a single stereo image is not representative. The aggregate is
+computed from raw error counts across all valid pixels, rather than averaging
+the five percentages. These results are a small held-out evaluation within the
+KITTI training split and are not an official KITTI leaderboard submission.
+
+### Qualitative error analysis
+
+The error heatmaps were inspected for the hardest and easiest held-out scenes.
+In these heatmaps, yellow/white denotes high absolute disparity error; dark
+purple denotes lower error; black can also denote pixels for which KITTI does
+not provide valid ground truth.
+
+| Pair | Observation | Interpretation |
+|---|---|---|
+| `000006_10` (D1 28.59%) | Broad bright regions cover the close foreground vehicle, with additional bright contours around parked vehicles and scene boundaries. | Large foreground disparity, reflective/low-texture vehicle surfaces, occlusion, and sharp depth discontinuities make local correspondence unreliable. |
+| `000008_10` (D1 6.47%) | Most valid scene regions remain dark, while brighter errors are largely confined to vehicle outlines and highlights. | SGBM matches the dominant surfaces reliably when texture and correspondence are clearer; boundary/reflectance errors remain. |
+
+This comparison supports the quantitative result: the method's dominant
+failure mode is not uniform error across an image, but difficult local
+correspondence at reflective regions, occlusions, and depth discontinuities.
 
 ## References
 
