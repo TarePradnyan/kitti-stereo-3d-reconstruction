@@ -83,6 +83,53 @@ Only valid KITTI ground-truth pixels (`disparity > 0`) are evaluated.
 
 The aggregate values are computed over all valid ground-truth pixels, not by simply averaging pair percentages. SGBM's left invalid margin and zero/negative predictions are treated as zero disparity, so they correctly contribute error rather than disappearing from the benchmark.
 
+## Experimental protocol
+
+This repository treats SGBM as a classical baseline, not a trained neural
+network. The full experiment record—including metric definitions, an explicit
+validation/held-out split, hypotheses for each parameter, and measured
+baselines—is maintained in [EXPERIMENTS.md](EXPERIMENTS.md). The final result
+must be reported only after the selected configuration is evaluated once on
+the held-out image IDs.
+
+## Final held-out result
+
+The chosen configuration (`numDisparities=128`, `blockSize=9`,
+`uniquenessRatio=5`) was selected on validation IDs `000000_10` to
+`000002_10`, then locked and evaluated once on five different KITTI training
+images (`000005_10` to `000009_10`). This is a reproducible held-out split
+within the public training data, not an official KITTI test-server result.
+
+| Evaluated images | Valid pixels | D1 (lower is better) | Bad-3 (lower is better) | RMSE (px) |
+|---|---:|---:|---:|---:|
+| `000005_10`–`000009_10` | 511,434 | **16.2764%** | **16.6643%** | **16.3709** |
+
+The complete protocol, tuning hypotheses, per-image results, and error
+analysis are in [EXPERIMENTS.md](EXPERIMENTS.md).
+
+### Qualitative result and failure case
+
+The following held-out example (`000006_10`) was the hardest of the five
+evaluated scenes (D1 28.59%). The disparity map still captures the broad road
+and vehicle-depth structure, while the error map highlights the known failure
+regions of classical local matching: reflective vehicle surfaces, occlusions,
+and sharp depth boundaries.
+
+| Predicted disparity | Absolute-disparity error versus KITTI ground truth |
+|---|---|
+| ![Colorized predicted disparity for held-out scene 000006_10](docs/assets/heldout_000006_disparity.png) | ![Error heatmap for held-out scene 000006_10](docs/assets/heldout_000006_error.png) |
+
+## Scope and limitations
+
+- This is a **classical SGBM baseline**, not a trained deep-learning model.
+- KITTI supplies rectified images; the project focuses on matching,
+  reprojection, and evaluation rather than re-implementing calibration.
+- The reported result is a five-image held-out split of KITTI's public
+  training data. It must not be described as an official KITTI leaderboard
+  submission.
+- Performance varies markedly by scene; the experiment log reports this
+  variation instead of hiding it behind a single aggregate number.
+
 ## Sanity checks and tests
 
 Verify that dependencies and pure-Python logic are wired correctly:
