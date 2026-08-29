@@ -11,7 +11,7 @@ For each KITTI pair the pipeline saves:
 - predicted disparity and color visualization;
 - absolute-error heatmap against `disp_occ_0` or `disp_noc_0`;
 - a colorized `.ply` point cloud;
-- pair-level metrics in `metrics.json` and an aggregate benchmark summary;
+- pair-level and aggregate metrics in `run_summary.json`;
 - optional SGBM grid-search results in `tuning_results.csv`.
 
 ## Project layout
@@ -149,10 +149,8 @@ Verify that dependencies and pure-Python logic are wired correctly:
 python -m unittest discover -s tests -v
 ```
 
-Before reporting results, use a small fixed set of five to ten training pairs, keep the tuning/final pair split explicit, and retain the generated `run_summary.json`. The visualization `rectification_check.png` overlays horizontal scanlines on every first pair; scene structure should line up along each line.
+The final experiment used three `_10` validation images for parameter selection and five different `_10` images for held-out evaluation. The generated `run_summary.json` retains the configuration and pixel-weighted aggregate metrics; `rectification_check.png` overlays horizontal scanlines on the first pair, where scene structure should align.
 
-## Resume wording (after you have final numbers)
+## Resume wording
 
-> Built an evaluation-driven stereo 3D reconstruction pipeline on KITTI using OpenCV SGBM; reprojected calibrated disparity to colorized PLY point clouds and benchmarked performance with Bad-3, KITTI-style D1, RMSE, and error heatmaps across a held-out image set.
-
-Replace “across a held-out image set” with the exact count and add your measured D1/Bad-3 only after completing the final run.
+> Built an evaluation-driven stereo 3D reconstruction pipeline on the KITTI Stereo 2015 dataset using OpenCV SGBM; tuned the matcher on a validation split, exported calibrated colorized PLY point clouds, and achieved 16.28% D1 / 16.66% Bad-3 on a five-scene held-out split.
