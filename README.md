@@ -119,6 +119,17 @@ and sharp depth boundaries.
 |---|---|
 | ![Colorized predicted disparity for held-out scene 000006_10](docs/assets/heldout_000006_disparity.png) | ![Error heatmap for held-out scene 000006_10](docs/assets/heldout_000006_error.png) |
 
+### Calibrated 3D reconstruction
+
+For held-out scene `000005_10`, the final pipeline derived depth and XYZ
+coordinates from the supplied camera projection matrices (`fx=721.5377 px`,
+baseline `=0.532725 m`) and exported a colorized PLY point cloud. Inspection
+in a point-cloud viewer shows coherent road and building surfaces at increasing
+depth. Sparsity/noise around nearby cars, reflections, and occlusion boundaries
+matches the disparity-error analysis above.
+
+![Colorized calibrated point cloud for held-out scene 000005_10](docs/assets/calibrated_000005_point_cloud.png)
+
 ## Scope and limitations
 
 - This is a **classical SGBM baseline**, not a trained deep-learning model.

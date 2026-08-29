@@ -129,6 +129,15 @@ This comparison supports the quantitative result: the method's dominant
 failure mode is not uniform error across an image, but difficult local
 correspondence at reflective regions, occlusions, and depth discontinuities.
 
+## 3D reconstruction verification
+
+Calibration for `000005_10` was added from KITTI's `calib_cam_to_cam` archive.
+The pipeline read the pair's projection matrices from `calib/000005.txt` and
+derived `fx=721.5377 px` and a `0.532725 m` stereo baseline before exporting
+the colorized PLY. Visual inspection of the PLY shows a coherent road plane and
+building facade, with sparse/noisy points around nearby vehicles and occlusion
+boundaries. This is consistent with the corresponding disparity limitations.
+
 ## References
 
 - [KITTI Stereo 2015 benchmark and metric definition](https://www.cvlibs.net/datasets/kitti/eval_scene_flow.php?benchmark=stereo)
